@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Statystyka i Księga Gości</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #widgetLicznikOdwiedzin {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        #ksiegaGosci {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+        .entry {
+            margin: 10px 0;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="widgetLicznikOdwiedzin">Ładowanie licznika odwiedzin...</div>
+    <div id="ksiegaGosci">
+        <h3>Księga Gości</h3>
+        <form id="guestbookForm">
+            <label for="guestName">Twoje imię:</label><br>
+            <input type="text" id="guestName" name="guestName" required><br>
+            <label for="guestMessage">Wiadomość:</label><br>
+            <textarea id="guestMessage" name="guestMessage" rows="4" required></textarea><br>
+            <button type="submit">Dodaj wpis</button>
+        </form>
+        <h4>Wpisy:</h4>
+        <div id="guestbookEntries"></div>
+    </div>
+
+    <p><center>Gdańsk 16-12-2024</center></p>
+
+    <script>
+        // Licznik odwiedzin
+        const licznikOdwiedzinKey = 'licznikOdwiedzin';
+        let liczbaOdwiedzin = localStorage.getItem(licznikOdwiedzinKey) || 0;
+        liczbaOdwiedzin++;
+        localStorage.setItem(licznikOdwiedzinKey, liczbaOdwiedzin);
+        document.getElementById('widgetLicznikOdwiedzin').innerText = `Liczba odwiedzin: ${liczbaOdwiedzin}`;
+
+        // Księga Gości
+        const guestbookEntries = JSON.parse(localStorage.getItem('guestbookEntries')) || [];
+
+        function renderGuestbookEntries() {
+            const entriesContainer = document.getElementById('guestbookEntries');
+            entriesContainer.innerHTML = '';
+            guestbookEntries.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'entry';
+                entryDiv.innerHTML = `<strong>${entry.name}</strong>: ${entry.message}`;
+                entriesContainer.appendChild(entryDiv);
+            });
+        }
+
+        document.getElementById('guestbookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('guestName').value;
+            const message = document.getElementById('guestMessage').value;
+            guestbookEntries.push({ name, message });
+            localStorage.setItem('guestbookEntries', JSON.stringify(guestbookEntries));
+            renderGuestbookEntries();
+            document.getElementById('guestbookForm').reset();
+        });
+
+        renderGuestbookEntries();
+    </script>
+</body>
+</html>
